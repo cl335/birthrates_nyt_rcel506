@@ -124,6 +124,11 @@ if not filtered_df.empty:
       )
 
   # 6. Global Minimalist Layout
+ 
+  latest_date = filtered_df["Date"].max()
+  
+  # Calculate 3 years in the future by adding 3 to the year component
+  max_axis_date = pd.Timestamp(year=latest_date.year + 3, month=latest_date.month, day=latest_date.day)
   fig.update_layout(
       plot_bgcolor="white",
       paper_bgcolor="white",
