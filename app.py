@@ -87,55 +87,43 @@ country_color_map = {
 
 # 6. Render Multi-Line Plotly Chart
 if not filtered_df.empty:
-  # Set up the base timeline graph using the explicit color map dictionary
+  # Add a text label column that is empty for all points except the very last one
+  # This displays the country name cleanly at the end of each trace line
+  filtered_df = filtered_df.sort_values("Date")
+  filtered_df["Label"] = ""
+
+  for country in filtered_df["Country"].unique():
+    mask = filtered_df["Country"] == country
+    if mask.any():
+      last_index = filtered_df[mask].index[-1]
+      filtered_df.at[last_index, "Label"] = country
+
+  # Build line chart using Plotly's native line tracking mode
   fig = px.line(
       filtered_df,
       x="Date",
       y="Value",
       color="Country",
-      markers=False,
-      color_discrete_map=country_color_map,  # Pass the explicit mapping here
+      text="Label",  # Use the column we just created
+      color_discrete_map=country_color_map,
       title="Birth Rates per Woman (1960 - Present)",
   )
 
- # 7. Add Direct Line Annotations (Using HTML tags inside the 'text' key)
-  annotations = []
+  # Style the text positioning natively so it stays on the right side of the endpoints
+  fig.update_traces(
+      textposition="middle right", font=dict(family="Georgia", size=11)
+  )
 
-  for country in filtered_df["Country"].unique():
-    country_data = filtered_df[filtered_df["Country"] == country]
-    if not country_data.empty:
-      last_row = country_data.sort_values("Date").iloc[-1]
-      label_color = country_color_map.get(country, "#333333")
-
-      # FIX: We put the color into a standard HTML span style tag.
-      # This completely bypasses the broken Plotly font validator!
-      html_text = (
-          f'<span style="color:{label_color};"><b>&nbsp;{country}</b></span>'
-      )
-
-      annotations.append(
-          dict(
-              x=last_row["Date"],
-              y=last_row["Value"],
-              text=html_text,
-              xanchor="left",
-              yanchor="middle",
-              showarrow=False,
-              font=dict(
-                  family="Georgia", size=11
-              ),  # Simple font config, color handled by HTML above
-          )
-      )
-
-  # 8. Apply Minimalist Layout & Injection
+  # 7. Apply Minimalist Layout & Injection
   fig.update_layout(
       plot_bgcolor="white",
       paper_bgcolor="white",
       font_family="Georgia",
       hovermode="x unified",
-      showlegend=False,
-      annotations=annotations,
-      margin=dict(l=40, r=220, t=40, b=40),  # Right margin expanded for labels
+      showlegend=False,  # Completely disables the default sidebar color key boxes
+      margin=dict(
+          l=40, r=220, t=40, b=40
+      ),  # High right margin ('r=220') gives labels room to display
       xaxis=dict(showgrid=True, gridcolor="#f5f5f5", title_text=""),
       yaxis=dict(
           showgrid=True, gridcolor="#f5f5f5", title_text="Fertility Rate"
