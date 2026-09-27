@@ -8,9 +8,6 @@ import streamlit as st
 st.set_page_config(page_title="NYT Interactive Chart", layout="wide")
 
 st.title("The average number of children born to a woman in select countries and regions")
-st.write(
-    "Replicating the multi-line New York Times time series dashboard. Select specific regions using the legend."
-)
 
 CSV_FILE = "birthrates.csv"
 
@@ -99,7 +96,6 @@ if not filtered_df.empty:
       y="Value",
       color="Country",
       markers=True,
-      title="Birth Rates per Woman (1960 - Present)",
   )
 
   # Journalistic styling adjustments to mimic NYT layout guidelines
