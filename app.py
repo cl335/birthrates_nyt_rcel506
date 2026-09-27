@@ -136,6 +136,7 @@ if not filtered_df.empty:
           gridcolor="#f5f5f5",
           zeroline=False,
           type="date",
+        range=[filtered_df["Date"].min(), max_axis_date]  # Cushions the timeline end date
       ),
       yaxis=dict(
           showgrid=True,
