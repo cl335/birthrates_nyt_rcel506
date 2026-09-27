@@ -130,7 +130,7 @@ if not filtered_df.empty:
       font_family="Arial",
       hovermode="x unified",
       showlegend=False,
-      margin=dict(l=40, r=200, t=40, b=40),  # Room on the right for labels
+      margin=dict(l=40, r=240, t=40, b=40),  # Room on the right for labels
       xaxis=dict(
           showgrid=True,
           gridcolor="#f5f5f5",
