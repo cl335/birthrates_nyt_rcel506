@@ -78,7 +78,7 @@ filtered_df = df[(df["Date"] >= start_date) & (df["Date"] <= end_date)]
 
 # 4. Define Color List
 nyt_palette = [
-    "#815d7b", "#e3d2df", "#3b64a1", "#ce503a", "#f7e183", "#889092", "#d37d7d", "#adadad", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3"
+    "#785171", "#d0b4c8", "#3b64a1", "#db6340", "#f6dd72", "#acacac", "#bc3939", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3"
 ]
 
 # 5. Build Graph Using Explicit Loops (Bypasses layout annotation bugs entirely)
