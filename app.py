@@ -7,8 +7,8 @@ import streamlit as st
 # 1. Page Layout Customization
 st.set_page_config(page_title="NYT Interactive Chart", layout="wide")
 
-st.title("📉 Global Birthrate Trends Over Time")
-st.write("Replicating the New York Times time series dashboard layout with direct line annotation labeling.")
+st.title("The average number of children born to a woman in select countries and regions ")
+
 
 CSV_FILE = "birthrates.csv"
 
@@ -78,54 +78,69 @@ nyt_palette = [
     "#889092", "#d37d7d", "#adadad", "#d3d3d3", "#d3d3d3",
     "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3"
 ]
+# Map every unique country to a specific color from our palette array
+unique_countries = df["Country"].unique()
+country_color_map = {
+    country: nyt_palette[i % len(nyt_palette)]
+    for i, country in enumerate(unique_countries)
+}
 
 # 6. Render Multi-Line Plotly Chart
 if not filtered_df.empty:
-    # Setup the base timeline graph using the custom palette mapping
-    fig = px.line(
-        filtered_df,
-        x="Date",
-        y="Value",
-        color="Country",
-        markers=False, # Removed markers so line endpoints anchor cleaner
-        color_discrete_sequence=nyt_palette
-    )
-    
-    # 7. Add Direct Line Annotations (Replacing the legend key)
-    annotations = []
-    
-    # Dynamically find the last available data point for each individual country inside the viewing window
-    for country in filtered_df["Country"].unique():
-        country_data = filtered_df[filtered_df["Country"] == country]
-        if not country_data.empty:
-            # Grab the point furthest right on the x-axis
-            last_row = country_data.sort_values("Date").iloc[-1]
-            
-            annotations.append(
-                dict(
-                    x=last_row["Date"],
-                    y=last_row["Value"],
-                    text=f" <b>{country}</b>",  # Appends bold text right next to the line
-                    xanchor="left",             # Places label to the right of the endpoint
-                    yanchor="middle",           # Vertically centered on the trace
-                    showarrow=False,
-                    font=dict(family="Georgia", size=11, color="inherit") # Inherits individual line color
-                )
-            )
-            
-    # 8. Apply Minimalist Layout & Injection
-    fig.update_layout(
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        font_family="Georgia",
-        hovermode="x unified",
-        showlegend=False,  # Completely disables the default side/bottom color box key!
-        annotations=annotations,  # Injects our computed floating text blocks
-        margin=dict(l=40, r=180, t=40, b=40), # Added a large right margin ('r=180') to give labels room to display
-        xaxis=dict(showgrid=True, gridcolor="#f5f5f5", title_text=""),
-        yaxis=dict(showgrid=True, gridcolor="#f5f5f5", title_text="Fertility Rate")
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+  # Set up the base timeline graph using the explicit color map dictionary
+  fig = px.line(
+      filtered_df,
+      x="Date",
+      y="Value",
+      color="Country",
+      markers=False,
+      color_discrete_map=country_color_map,  # Pass the explicit mapping here
+      title="Birth Rates per Woman (1960 - Present)",
+  )
+
+  # 7. Add Direct Line Annotations (Replacing the legend key)
+  annotations = []
+
+  for country in filtered_df["Country"].unique():
+    country_data = filtered_df[filtered_df["Country"] == country]
+    if not country_data.empty:
+      # Grab the point furthest right on the x-axis for text placement
+      last_row = country_data.sort_values("Date").iloc[-1]
+
+      # Fetch the explicit color assigned to this specific country
+      label_color = country_color_map.get(country, "#333333")
+
+      annotations.append(
+          dict(
+              x=last_row["Date"],
+              y=last_row["Value"],
+              text=f" <b>{country}</b>",  # Appends bold text next to the line
+              xanchor="left",  # Places label to the right of the endpoint
+              yanchor="middle",  # Vertically centered on the trace line
+              showarrow=False,
+              font=dict(
+                  family="Georgia", size=11, color=label_color
+              ),  # Corrected: Explicitly uses valid hex color string!
+          )
+      )
+
+  # 8. Apply Minimalist Layout & Injection
+  fig.update_layout(
+      plot_bgcolor="white",
+      paper_bgcolor="white",
+      font_family="Georgia",
+      hovermode="x unified",
+      showlegend=False,  # Completely disables the default sidebar color key boxes
+      annotations=annotations,  # Injects our computed text objects
+      margin=dict(
+          l=40, r=180, t=40, b=40
+      ),  # High right margin ('r=180') gives labels room to display
+      xaxis=dict(showgrid=True, gridcolor="#f5f5f5", title_text=""),
+      yaxis=dict(
+          showgrid=True, gridcolor="#f5f5f5", title_text="Fertility Rate"
+      ),
+  )
+
+  st.plotly_chart(fig, use_container_width=True)
 else:
-    st.warning("No information exists for this window selection.")
+  st.warning("No information exists for this window selection.")
