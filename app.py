@@ -7,10 +7,7 @@ import streamlit as st
 # 1. Page Configuration Setup
 st.set_page_config(page_title="NYT Interactive Chart", layout="wide")
 
-st.title("📉 Global Birthrate Trends Over Time")
-st.write(
-    "Replicating the New York Times time series layout with explicit multi-line labeling."
-)
+st.title("The average number of children born to a woman in select countries and regions")
 
 CSV_FILE = "birthrates.csv"
 
@@ -81,20 +78,7 @@ filtered_df = df[(df["Date"] >= start_date) & (df["Date"] <= end_date)]
 
 # 4. Define Color List
 nyt_palette = [
-    "#22415e",
-    "#b83227",
-    "#1b8a5a",
-    "#d9822b",
-    "#6c5ce7",
-    "#006266",
-    "#1289A7",
-    "#A3CB38",
-    "#ED4C67",
-    "#485460",
-    "#5758BB",
-    "#FDA7DF",
-    "#D980FA",
-    "#5f27cd",
+    ""#815d7b", "#e3d2df", "#3b64a1", "#ce503a", "#f7e183", "#889092", "#d37d7d", "#adadad", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3", "#d3d3d3"
 ]
 
 # 5. Build Graph Using Explicit Loops (Bypasses layout annotation bugs entirely)
@@ -135,7 +119,7 @@ if not filtered_df.empty:
               textposition="middle right",
               showlegend=False,
               hoverinfo="skip",
-              textfont=dict(family="Georgia", size=11, color=color),
+              textfont=dict(family="Arial", size=11, color=color),
           )
       )
 
@@ -143,7 +127,7 @@ if not filtered_df.empty:
   fig.update_layout(
       plot_bgcolor="white",
       paper_bgcolor="white",
-      font_family="Georgia",
+      font_family="Arial",
       hovermode="x unified",
       showlegend=False,
       margin=dict(l=40, r=200, t=40, b=40),  # Room on the right for labels
@@ -157,7 +141,7 @@ if not filtered_df.empty:
           showgrid=True,
           gridcolor="#f5f5f5",
           zeroline=False,
-          title_text="Fertility Rate",
+          title_text="Children",
       ),
   )
 
