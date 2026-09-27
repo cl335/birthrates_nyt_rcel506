@@ -9,7 +9,7 @@ st.set_page_config(page_title="NYT Interactive Chart", layout="wide")
 
 st.title("The average number of children born to a woman in select countries and regions")
 
-CSV_FILE = "birthrates2.csv"
+CSV_FILE = "birthrates.csv"
 
 
 # 2. Dataset Processing Pipeline
