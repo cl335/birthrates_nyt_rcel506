@@ -98,29 +98,32 @@ if not filtered_df.empty:
       title="Birth Rates per Woman (1960 - Present)",
   )
 
-  # 7. Add Direct Line Annotations (Replacing the legend key)
+ # 7. Add Direct Line Annotations (Using HTML tags inside the 'text' key)
   annotations = []
 
   for country in filtered_df["Country"].unique():
     country_data = filtered_df[filtered_df["Country"] == country]
     if not country_data.empty:
-      # Grab the point furthest right on the x-axis for text placement
       last_row = country_data.sort_values("Date").iloc[-1]
-
-      # Fetch the explicit color assigned to this specific country
       label_color = country_color_map.get(country, "#333333")
+
+      # FIX: We put the color into a standard HTML span style tag.
+      # This completely bypasses the broken Plotly font validator!
+      html_text = (
+          f'<span style="color:{label_color};"><b>&nbsp;{country}</b></span>'
+      )
 
       annotations.append(
           dict(
               x=last_row["Date"],
               y=last_row["Value"],
-              text=f" <b>{country}</b>",  # Appends bold text next to the line
-              xanchor="left",  # Places label to the right of the endpoint
-              yanchor="middle",  # Vertically centered on the trace line
+              text=html_text,
+              xanchor="left",
+              yanchor="middle",
               showarrow=False,
               font=dict(
-                  family="Georgia", size=11, color=label_color
-              ),  # Corrected: Explicitly uses valid hex color string!
+                  family="Georgia", size=11
+              ),  # Simple font config, color handled by HTML above
           )
       )
 
@@ -130,11 +133,9 @@ if not filtered_df.empty:
       paper_bgcolor="white",
       font_family="Georgia",
       hovermode="x unified",
-      showlegend=False,  # Completely disables the default sidebar color key boxes
-      annotations=annotations,  # Injects our computed text objects
-      margin=dict(
-          l=40, r=180, t=40, b=40
-      ),  # High right margin ('r=180') gives labels room to display
+      showlegend=False,
+      annotations=annotations,
+      margin=dict(l=40, r=220, t=40, b=40),  # Right margin expanded for labels
       xaxis=dict(showgrid=True, gridcolor="#f5f5f5", title_text=""),
       yaxis=dict(
           showgrid=True, gridcolor="#f5f5f5", title_text="Fertility Rate"
